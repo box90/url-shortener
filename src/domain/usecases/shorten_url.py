@@ -1,10 +1,9 @@
-import base64
 from datetime import datetime, timedelta
 import time
 
 from domain.models.short_url import ShortURL
 from domain.repositories.url_repository import URLRepository
-from configs import BASE_URL, DEFAULT_EXPIRATION
+from configs import BASE_URL
 from utils import generate_code
 
 class ShortenUrlUseCase:
