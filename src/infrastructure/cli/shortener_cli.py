@@ -14,14 +14,14 @@ async def run_cli():
     service = URLShortenerService(MongoURLRepository())
 
     if args.minify:
-        result = service.shorten(args.minify)
+        result = await service.shorten(args.minify)
         print(f"🔗 Shortened URL: {result}")
     elif args.expand:
-        result = service.expand(args.expand)
+        result = await service.expand(args.expand)
         print(f"🌐 Original URL: {result}")
     elif args.list:
         print("📋 All Shortened URLs:")
         for entry in await service.list_all():
             print(f"- {entry['short_url']} -> {entry['original_url']} (expires {entry['expires_at']})")
     else:
-        print("ℹ️ Use --minify, --expand or --list")
+        parser.print_help()
