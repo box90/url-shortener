@@ -1,7 +1,10 @@
+import pymongo
 from pymongo import ASCENDING
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.errors import DuplicateKeyError
 
 from configs import MONGO_URI, DB_NAME, COLLECTION_NAME
+from domain.errors.exceptions import DuplicateKeyCustomException
 from domain.models.short_url import ShortURL
 from domain.repositories.url_repository import URLRepository
 
@@ -23,7 +26,10 @@ class MongoURLRepository(URLRepository):
         return ShortURL(**doc) if doc else None
 
     async def save(self, short_url: ShortURL):
-        await self._collection.insert_one(short_url.__dict__)
+        try:
+            await self._collection.insert_one(short_url.__dict__)
+        except DuplicateKeyError:
+            raise DuplicateKeyCustomException(f"URL with code {short_url.short_code} already exists.")
 
     async def list_all(self):
         cursor = self._collection.find({})

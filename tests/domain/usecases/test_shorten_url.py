@@ -28,16 +28,18 @@ async def test_shorten_url_returns_existing_short_code_if_not_expired():
 
 
 @pytest.mark.asyncio
-async def test_shorten_url_generates_new_code_if_expired():
+async def test_shorten_url_does_not_generate_new_code_if_expired():
     repo = FakeRepo()
     original_url = "https://example.com/some/long/url"
     use_case = ShortenUrlUseCase(repo)
 
-    short_url = await use_case.execute(original_url, expiration=-1)  # expired
-    new_short_url = await use_case.execute(original_url, expiration=3600)
+    expired_short_url = await use_case.execute(original_url, expiration=-1)  # Expired
+    assert expired_short_url.startswith(BASE_URL)
 
-    assert short_url != new_short_url
-    assert len(repo.data) == 2
+    new_short_url = await use_case.execute(original_url, expiration=3600)
+    assert new_short_url == "❌ Shortened URL already exists and it's expired."
+
+    assert len(repo.data) == 1
 
 
 @pytest.mark.asyncio
