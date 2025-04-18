@@ -1,0 +1,2 @@
+class DuplicateKeyCustomException(Exception):
+    pass
